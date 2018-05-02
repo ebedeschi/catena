@@ -52,6 +52,7 @@ OneWire oneWire(DS18B20_PIN);
 DallasTemperature sensors(&oneWire);
 
 #define DS_NUM 11
+//#define DS_NUM 1
 
 typedef struct ds
   {
@@ -75,6 +76,11 @@ uint8_t dsaddr[DS_NUM][8] = {
 		{ 0x28, 0xFF, 0x64, 0x8C, 0xA7, 0x16, 0x03, 0xA5 },
 		{ 0x28, 0xFF, 0xB0, 0x0F, 0xB0, 0x16, 0x05, 0x58 }
 };
+
+//uint8_t dsaddr[DS_NUM][8] = {
+//		{ 0x28, 0xFF, 0xF6, 0xF1, 0xB4, 0x16, 0x03 , 0x0A }
+//};
+
 uint32_t cont = 0;
 
 void alarmMatch()
@@ -165,7 +171,8 @@ void setup() {
 		Serial.println("");
 	}
 
-//	USBDevice.detach();
+	Serial.end();
+	USBDevice.detach();
 
 	// RTC initialization
 	rtc.begin();
@@ -195,7 +202,7 @@ void loop() {
 
 
 
-		    error = LoRaWAN.setDataRate(5);
+		    error = LoRaWAN.setDataRate(0);
 		    arduinoLoRaWAN::printAnswer(error);
 		    //Serial2.print("LoRaWAN._dataRate: ");
 		    //Serial2.println(LoRaWAN._dataRate);
@@ -300,7 +307,7 @@ void loop() {
 					strcat(data, datas);
 				}
 			}
-			Serial.println("");
+//			Serial.println("");
 
 			//////////////////////////////////////////////
 			// 3. Send unconfirmed packet
@@ -321,30 +328,31 @@ void loop() {
 			if( error == 0 )
 			{
 			 //3. Send Confirmed packet OK
-			 Serial.println("Send Confirmed packet OK");
+//			 Serial.println("Send Confirmed packet OK");
 			 if (LoRaWAN._dataReceived == true)
 			 {
 			   //There's data on
 			   //port number: LoRaWAN._port
 			   //and Data in: LoRaWAN._data
-			   Serial.println("Downlink data");
-			   Serial.print("LoRaWAN._port: ");
-			   Serial.println(LoRaWAN._port);
-			   Serial.print("LoRaWAN._data: ");
-			   Serial.println(LoRaWAN._data);
+//			   Serial.println("Downlink data");
+//			   Serial.print("LoRaWAN._port: ");
+//			   Serial.println(LoRaWAN._port);
+//			   Serial.print("LoRaWAN._data: ");
+//			   Serial.println(LoRaWAN._data);
 			 }
 			}
 			else if( error == 6 )
 			{
-			 //3. Send Confirmed packet error
-			   Serial.println("Module hasn't joined a network");
-
 			   _deviceState = DEVICE_STATE_JOIN;
+			}
+			else if( error == 2 )
+			{
+			   _deviceState = DEVICE_STATE_INIT;
 			}
 			else
 			{
 			 //3. Send Confirmed packet error
-			   Serial.println("Send Confirmed packet ERROR");
+//			   Serial.println("Send Confirmed packet ERROR");
 			}
 			digitalWrite(LED, HIGH);
 			delay(300);
@@ -359,13 +367,13 @@ void loop() {
 //			//Serial2.end();
 
 			//rtc.setAlarmSeconds((rtc.getAlarmSeconds() + 30) % 60);
-			rtc.setAlarmMinutes((rtc.getAlarmMinutes() + 2) % 60);
+			rtc.setAlarmMinutes((rtc.getAlarmMinutes() + 3) % 60);
 			rtc.enableAlarm(rtc.MATCH_MMSS);
 			rtc.attachInterrupt(alarmMatch);
 
 			digitalWrite(LED, LOW);
-//			rtc.standbyMode();
-			delay(120000);
+			rtc.standbyMode();
+//			delay(120000);
 
 //			Serial.println("Exit sleep");
 

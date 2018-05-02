@@ -306,8 +306,8 @@ void arduinoLoRaWAN::printAnswer(uint8_t ans)
 		break;
 	}
 
-	Serial.print("--->");
-	Serial.print(cret);
+//	Serial.print("--->");
+//	Serial.print(cret);
 }
 
 /*!
