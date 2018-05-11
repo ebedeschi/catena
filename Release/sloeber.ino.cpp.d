@@ -103,6 +103,8 @@ sloeber.ino.cpp.o: ..\sloeber.ino.cpp \
  C:\Program\ Files\sloeber\arduinoPlugin\packages\adafruit\hardware\samd\1.0.22\cores\arduino/USB/samd21_host.h \
  ..\constant.h \
  C:\Program\ Files\sloeber\arduinoPlugin\packages\adafruit\hardware\samd\1.0.22\cores\arduino/wiring_private.h \
+ C:\Program\ Files\sloeber\arduinoPlugin\libraries\Adafruit_SleepyDog_Library\1.1.1/Adafruit_SleepyDog.h \
+ C:\Program\ Files\sloeber\arduinoPlugin\libraries\Adafruit_SleepyDog_Library\1.1.1/utility/WatchdogSAMD.h \
  C:\Program\ Files\sloeber\arduinoPlugin\libraries\RTCZero\1.5.2\src/RTCZero.h \
  C:\Users\Emanuele\Documents\sloeber-workspace\Catena\arduino-api/arduinoUART.h \
  C:\Program\ Files\sloeber\arduinoPlugin\libraries\OneWire\2.3.3/OneWire.h \
@@ -319,6 +321,10 @@ C:\Program\ Files\sloeber\arduinoPlugin\packages\adafruit\hardware\samd\1.0.22\c
 ..\constant.h:
 
 C:\Program\ Files\sloeber\arduinoPlugin\packages\adafruit\hardware\samd\1.0.22\cores\arduino/wiring_private.h:
+
+C:\Program\ Files\sloeber\arduinoPlugin\libraries\Adafruit_SleepyDog_Library\1.1.1/Adafruit_SleepyDog.h:
+
+C:\Program\ Files\sloeber\arduinoPlugin\libraries\Adafruit_SleepyDog_Library\1.1.1/utility/WatchdogSAMD.h:
 
 C:\Program\ Files\sloeber\arduinoPlugin\libraries\RTCZero\1.5.2\src/RTCZero.h:
 

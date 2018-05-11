@@ -42,6 +42,11 @@
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/adafruit/hardware/samd/1.0.22/variants/feather_m0</locationURI>
 		</link>
 		<link>
+			<name>libraries/Adafruit_SleepyDog_Library</name>
+			<type>2</type>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/Adafruit_SleepyDog_Library/1.1.1</locationURI>
+		</link>
+		<link>
 			<name>libraries/DallasTemperature</name>
 			<type>2</type>
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/DallasTemperature/3.7.9</locationURI>

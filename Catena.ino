@@ -2,6 +2,7 @@
 #include "constant.h"
 
 #include "wiring_private.h"
+#include <Adafruit_SleepyDog.h>
 #include <RTCZero.h>
 #include <arduinoUART.h>
 
@@ -51,6 +52,7 @@ OneWire oneWire(DS18B20_PIN);
 // Pass our oneWire reference to Dallas Temperature.
 DallasTemperature sensors(&oneWire);
 
+//#define DS_NUM 5
 #define DS_NUM 11
 //#define DS_NUM 1
 
@@ -62,6 +64,14 @@ typedef struct ds
   };
 
 ds _ds[DS_NUM];
+
+//uint8_t dsaddr[DS_NUM][8] = {
+//		{ 0x28, 0xFF, 0xDE, 0x9E, 0xA7, 0x16, 0x05, 0xB5 },
+//		{ 0x28, 0xFF, 0x37, 0x91, 0xB0, 0x16, 0x04, 0x68 },
+//		{ 0x28, 0xFF, 0xBD, 0x0C, 0xB0, 0x16, 0x05, 0x3C },
+//		{ 0x28, 0xFF, 0xCC, 0x48, 0xA7, 0x16, 0x05, 0x42 },
+//		{ 0x28, 0xFF, 0x8E, 0x2B, 0xB0, 0x16, 0x05, 0x00 }
+//};
 
 uint8_t dsaddr[DS_NUM][8] = {
 		{ 0x28, 0xFF, 0x35, 0xE7, 0xA1, 0x16, 0x05, 0xF5 },
@@ -192,6 +202,7 @@ void loop() {
 
 		case DEVICE_STATE_INIT:
 		{
+			Watchdog.disable();
 		    //////////////////////////////////////////////
 		    // 1. Switch on
 		    //////////////////////////////////////////////
@@ -221,6 +232,7 @@ void loop() {
 
 		case DEVICE_STATE_JOIN:
 		{
+			Watchdog.disable();
 			//////////////////////////////////////////////
 			// 6. Join network
 			//////////////////////////////////////////////
@@ -372,7 +384,10 @@ void loop() {
 			rtc.attachInterrupt(alarmMatch);
 
 			digitalWrite(LED, LOW);
+			// Disable the watchdog entirely by calling Watchdog.disable();
+			Watchdog.disable();
 			rtc.standbyMode();
+			Watchdog.enable(16000);
 //			delay(120000);
 
 //			Serial.println("Exit sleep");

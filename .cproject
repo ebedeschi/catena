@@ -21,6 +21,7 @@
 								<option id="io.sloeber.compiler.cpp.sketch.option.incpath.892571261" name="Include Paths (-I)" superClass="io.sloeber.compiler.cpp.sketch.option.incpath" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Catena/core/core}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Catena/arduinoLoRaWAN}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Catena/Adafruit_ASFcore}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Catena/arduino-api}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Catena/core/variant}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Catena/libraries/RTCZero}&quot;"/>
@@ -28,12 +29,15 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Catena/libraries/Wire}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Catena/libraries/OneWire}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Catena/libraries/DallasTemperature}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Catena/libraries/Adafruit_SleepyDog_Library}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Catena/libraries/Adafruit_SleepyDog_Library/utility}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.cpp.sketch.input.808488634" name="CPP source files" superClass="io.sloeber.compiler.cpp.sketch.input"/>
 							</tool>
 							<tool id="io.sloeber.tool.compiler.c.1774481752" name="Arduino C Compiler" superClass="io.sloeber.tool.compiler.c">
 								<option id="io.sloeber.compiler.c.sketch.option.incpath.860583242" name="Include Paths (-I)" superClass="io.sloeber.compiler.c.sketch.option.incpath" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Catena/core/core}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Catena/Adafruit_ASFcore}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Catena/arduinoLoRaWAN}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Catena/arduino-api}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Catena/core/variant}&quot;"/>
@@ -42,6 +46,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Catena/libraries/Wire}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Catena/libraries/OneWire}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Catena/libraries/DallasTemperature}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Catena/libraries/Adafruit_SleepyDog_Library}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Catena/libraries/Adafruit_SleepyDog_Library/utility}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.c.sketch.input.1166622622" name="C Source Files" superClass="io.sloeber.compiler.c.sketch.input"/>
 							</tool>
@@ -54,6 +60,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Catena/libraries/Wire}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Catena/libraries/OneWire}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Catena/libraries/DallasTemperature}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Catena/libraries/Adafruit_SleepyDog_Library}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Catena/libraries/Adafruit_SleepyDog_Library/utility}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.S.sketch.input.2014029102" name="Assembly source files" superClass="io.sloeber.compiler.S.sketch.input"/>
 							</tool>
