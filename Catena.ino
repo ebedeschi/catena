@@ -154,18 +154,25 @@ void printAddress(DeviceAddress deviceAddress);
 void setup() {
 
 	 // Switch unused pins as input and enabled built-in pullup
-//	 for (unsigned char pinNumber = 0; pinNumber < 23; pinNumber++)
-//	 {
-//		 pinMode(pinNumber, INPUT_PULLUP);
-//	 }
-//
-//	 for (unsigned char pinNumber = 32; pinNumber < 42; pinNumber++)
-//	 {
-//		 pinMode(pinNumber, INPUT_PULLUP);
-//	 }
-//
-//	 pinMode(25, INPUT_PULLUP);
-//	 pinMode(26, INPUT_PULLUP);
+	 for (unsigned char pinNumber = 0; pinNumber < 11; pinNumber++)
+	 {
+		 pinMode(pinNumber, INPUT_PULLUP);
+	 }
+
+	 for (unsigned char pinNumber = 32; pinNumber < 34; pinNumber++)
+	 {
+		 pinMode(pinNumber, INPUT_PULLUP);
+	 }
+
+	 // NO 34 = PA19 = D12 reset pin
+
+	 for (unsigned char pinNumber = 35; pinNumber < 42; pinNumber++)
+	 {
+		 pinMode(pinNumber, INPUT_PULLUP);
+	 }
+
+	 pinMode(25, INPUT_PULLUP);
+	 pinMode(26, INPUT_PULLUP);
 
 	pinMode(LED, OUTPUT);
 	digitalWrite(LED, LOW);
@@ -176,6 +183,10 @@ void setup() {
 	digitalWrite(BAT_ADC_EN, LOW);
 	pinMode(BAT_ADC, INPUT);
 	analogReadResolution(12);
+
+	// pin reset host
+	digitalWrite(PIN_RESET, LOW);
+	pinMode(PIN_RESET, OUTPUT);
 
 	//Serial.begin(9600);
 	Serial.begin(9600);
@@ -395,6 +406,13 @@ void loop() {
 						sprintf(datas,"%02X%02X", datab[0] & 0xff, datab[1] & 0xff);
 						strcat(data, datas);
 					}
+					else
+					{
+						datab[0] = 0x00;
+						datab[1] = 0x00;
+						sprintf(datas,"%02X%02X", datab[0] & 0xff, datab[1] & 0xff);
+						strcat(data, datas);
+					}
 				}
 			}
 //			Serial.println("");
@@ -429,7 +447,27 @@ void loop() {
 //			   Serial.println(LoRaWAN._port);
 //			   Serial.print("LoRaWAN._data: ");
 //			   Serial.println(LoRaWAN._data);
+
+			   int number = (int)strtol(LoRaWAN._data, NULL, 16);
+
+//			   Serial.println(number);
+
+			   // r host reset
+			   if(number == 114)
+			   {
+					digitalWrite(PIN_RESET, HIGH);
+					delay(2000);
+					digitalWrite(PIN_RESET, LOW);
+			   }
+			   // auto-reset
+			   if(number == 97)
+			   {
+				   Watchdog.enable(1000);
+				   delay(2000);
+			   }
+
 			 }
+
 			}
 			else if( error == 6 )
 			{

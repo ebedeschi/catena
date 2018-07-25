@@ -17,6 +17,7 @@
 #define DS18B20_PIN_11 11  // on pin 11 (a 4.7K resistor is necessary)
 #define DS18B20_PIN_3 3  // on pin 3 (a 4.7K resistor is necessary)
 #define DS18B20_PIN_18 18  // on pin A4 (a 4.7K resistor is necessary)
+#define PIN_RESET 12
 
 /*! @enum DeviceState
  */
