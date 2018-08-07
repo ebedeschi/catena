@@ -26,7 +26,7 @@ enum DeviceState
     DEVICE_STATE_INIT = 0,
     DEVICE_STATE_JOIN = 1,
     DEVICE_STATE_SEND = 2,
-    DEVICE_STATE_SLEEP = 3
+	DEVICE_STATE_SLEEP = 3
 };
 
 #endif /* CONSTANT_H_ */

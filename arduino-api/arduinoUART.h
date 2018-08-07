@@ -59,7 +59,7 @@
 #define DEBUG_UART           0
 
 // define print MACRO
-#define PRINT_UART(str)   Serial.print(F("[UART] ")); Serial.print(str);
+#define PRINT_UART(str)   //Serial.print(F("[UART] ")); Serial.print(str);
 
 /*! \def UART0
     \brief UART0 of the MCU

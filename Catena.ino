@@ -14,6 +14,8 @@
 #include <configLoRaWAN.h>
 
 RTCZero rtc;
+#define SLEEP_TIME 10
+#define DUTY_CYCLE_TIME 180
 
 /* Change these values to set the current initial time */
 const uint8_t seconds = 0;
@@ -141,7 +143,11 @@ uint8_t dsaddr[DS_NUM_CATENE][DS_NUM][8] = {
 //		{ 0x28, 0xFF, 0xF6, 0xF1, 0xB4, 0x16, 0x03 , 0x0A }
 //};
 
-uint32_t cont = 0;
+uint32_t sleep_cont = 0;
+
+uint32_t appWatchdog = 0;
+
+int err_tx = 0;
 
 void alarmMatch()
 {
@@ -190,6 +196,7 @@ void setup() {
 
 	//Serial.begin(9600);
 	Serial.begin(9600);
+	Serial5.begin(9600);
 //	pinPeripheral(6, PIO_SERCOM);
 //	pinPeripheral(7, PIO_SERCOM);
 //	Serial1.begin(57600);
@@ -197,23 +204,29 @@ void setup() {
 	digitalWrite(LED, HIGH);
 	delay(10000);
 	digitalWrite(LED, LOW);
-	Serial.println("START");
+	Serial5.println("START");
 
 //	sensors[A] = sensors_A;
 //	sensors[B] = sensors_B;
 //	sensors[C] = sensors_C;
 
-	//sensors[A].begin();
+	sensors[A].begin();
 	sensors[B].begin();
 	sensors[C].begin();
-	Serial.print("Found ");
-//	Serial.print(sensors.getDeviceCount(), DEC);
-	Serial.println(" devices.");
+	Serial5.print("Found A ");
+	Serial5.print(sensors[A].getDeviceCount(), DEC);
+	Serial5.println(" devices.");
+	Serial5.print("Found B ");
+	Serial5.print(sensors[B].getDeviceCount(), DEC);
+	Serial5.println(" devices.");
+	Serial5.print("Found C ");
+	Serial5.print(sensors[C].getDeviceCount(), DEC);
+	Serial5.println(" devices.");
 
 	for(int k=0; k< DS_NUM_CATENE; k++)
 	{
-		Serial.print("--> ");
-		Serial.println((char)('A' + k));
+		Serial5.print("--> ");
+		Serial5.println((char)('A' + k));
 
 		for(int i=0; i< DS_NUM; i++)
 		{
@@ -221,26 +234,26 @@ void setup() {
 			_ds[k][i].t_16 = 0;
 			_ds[k][i].check = false;
 
-			Serial.print("Check ");
-			Serial.print(i+1);
-			Serial.print(": ");
+			Serial5.print("Check ");
+			Serial5.print(i+1);
+			Serial5.print(": ");
 			printAddress(_ds[k][i].addr);
-			Serial.print(" ");
+			Serial5.print(" ");
 			DeviceAddress taddr;
 			memcpy(taddr, _ds[k][i].addr, 8);
 			if (sensors[k].getAddress(taddr, i))
 			{
-				Serial.println("ON");
+				Serial5.println("ON");
 				bool err = sensors[k].setResolution(_ds[k][i].addr, 12);
 				if(err)
-					Serial.println("true");
+					Serial5.println("true");
 				else
-					Serial.println("false");
+					Serial5.println("false");
 				_ds[k][i].check = true;
 			}
 			else
 			{
-				Serial.println("OFF");
+				Serial5.println("OFF");
 				_ds[k][i].check = false;
 			}
 
@@ -248,17 +261,17 @@ void setup() {
 
 		for(int i=0; i< DS_NUM; i++)
 		{
-			Serial.print("addr: ");
+			Serial5.print("addr: ");
 			printAddress(_ds[k][i].addr);
-			Serial.println("");
+			Serial5.println("");
 		}
 
-		Serial.println("");
+		Serial5.println("");
 
 	}
 
 
-	Serial.println("Fine setup");
+	Serial5.println("Fine setup");
 
 	Serial.end();
 	USBDevice.detach();
@@ -282,30 +295,36 @@ void loop() {
 		case DEVICE_STATE_INIT:
 		{
 			Watchdog.disable();
+			Watchdog.enable(16000);
 		    //////////////////////////////////////////////
 		    // 1. Switch on
 		    //////////////////////////////////////////////
+
+			error = LoRaWAN.OFF(uart);
+			digitalWrite(RN_RESET, LOW);
+			delay(500);
+			digitalWrite(RN_RESET, HIGH);
 		    error = LoRaWAN.ON(uart);
 
-		    Serial.print("1. Switch on: ");
+		    Serial5.print("1. Switch on: ");
 		    arduinoLoRaWAN::printAnswer(error);
 
 
 
 		    error = LoRaWAN.setDataRate(0);
 		    arduinoLoRaWAN::printAnswer(error);
-//		    Serial.print("LoRaWAN._dataRate: ");
-//		    Serial.println(LoRaWAN._dataRate);
+		    Serial5.print("LoRaWAN._dataRate: ");
+		    Serial5.println(LoRaWAN._dataRate);
 
 		    error = LoRaWAN.setRetries(0);
 		    arduinoLoRaWAN::printAnswer(error);
-//		    Serial.print("LoRaWAN._retries: ");
-//		    Serial.println(LoRaWAN._retries);
+		    Serial5.print("LoRaWAN._retries: ");
+		    Serial5.println(LoRaWAN._retries);
 
 		    error = LoRaWAN.setADR("on");
 		    arduinoLoRaWAN::printAnswer(error);
-//		    Serial.print("LoRaWAN._adr: ");
-//		    Serial.println(LoRaWAN._adr);
+		    Serial5.print("LoRaWAN._adr: ");
+		    Serial5.println(LoRaWAN._adr);
 
 			_deviceState = DEVICE_STATE_JOIN;
 			break;
@@ -314,6 +333,7 @@ void loop() {
 		case DEVICE_STATE_JOIN:
 		{
 			Watchdog.disable();
+			Watchdog.enable(16000);
 			//////////////////////////////////////////////
 			// 6. Join network
 			//////////////////////////////////////////////
@@ -324,14 +344,23 @@ void loop() {
 			 if( error == 0 )
 			 {
 			   //2. Join network OK
-//			   Serial.println("Join network OK");
+			   Serial5.println("Join network OK");
 
 			   _deviceState = DEVICE_STATE_SEND;
 			 }
 			 else
 			 {
 			   //2. Join network error
-//				 Serial.println("Join network error");
+				 Serial5.println("Join network error");
+				 if(appWatchdog++ >= 10)
+				 {
+					 Serial5.println("Auto reset appWatchdog");
+					 appWatchdog = 0;
+					 Watchdog.reset();
+					 Watchdog.enable(1000);
+					 delay(2000);
+				 }
+				 Watchdog.reset();
 				 delay(10000);
 				 _deviceState = DEVICE_STATE_JOIN;
 			 }
@@ -393,15 +422,15 @@ void loop() {
 				{
 					if(_ds[k][i].check == true)
 					{
-//						Serial.print("Addr: ");
-//						printAddress(_ds[k][i].addr);
-//						Serial.print(" Temp");
-//						Serial.print((char)('A' + k));
-//						Serial.print(" ");
-//						Serial.print(i+1);
-//						Serial.print(": ");
+						Serial5.print("Addr: ");
+						printAddress(_ds[k][i].addr);
+						Serial5.print(" Temp");
+						Serial5.print((char)('A' + k));
+						Serial5.print(" ");
+						Serial5.print(i+1);
+						Serial5.print(": ");
 						_ds[k][i].t_16 = sensors[k].getTemp(_ds[k][i].addr);
-//						Serial.println(DallasTemperature::rawToCelsius(_ds[k][i].t_16));
+						Serial5.println(DallasTemperature::rawToCelsius(_ds[k][i].t_16));
 						memcpy(&datab[0], &_ds[k][i].t_16, 2);
 						sprintf(datas,"%02X%02X", datab[0] & 0xff, datab[1] & 0xff);
 						strcat(data, datas);
@@ -415,14 +444,25 @@ void loop() {
 					}
 				}
 			}
-//			Serial.println("");
+			Serial5.println("");
 
 			//////////////////////////////////////////////
 			// 3. Send unconfirmed packet
 			//////////////////////////////////////////////
 
-			error = LoRaWAN.sendConfirmed(port, data);
-			arduinoLoRaWAN::printAnswer(error);
+			int tx_cont = 0;
+			do
+			{
+				Watchdog.reset();
+				if(tx_cont<0)
+					delay(5000);
+				Serial5.print("Send unconfirmed packet: ");
+				Serial5.println(tx_cont);
+				error = LoRaWAN.sendConfirmed(port, data);
+				arduinoLoRaWAN::printAnswer(error);
+			}while(error!=0 && tx_cont++<3);
+
+			_deviceState = DEVICE_STATE_SLEEP;
 
 			// Error messages:
 			/*
@@ -435,26 +475,28 @@ void loop() {
 			// Check status
 			if( error == 0 )
 			{
+				err_tx=0;
 			 //3. Send Confirmed packet OK
-//			 Serial.println("Send Confirmed packet OK");
+			 Serial5.println("Send Confirmed packet OK");
 			 if (LoRaWAN._dataReceived == true)
 			 {
 			   //There's data on
 			   //port number: LoRaWAN._port
 			   //and Data in: LoRaWAN._data
-//			   Serial.println("Downlink data");
-//			   Serial.print("LoRaWAN._port: ");
-//			   Serial.println(LoRaWAN._port);
-//			   Serial.print("LoRaWAN._data: ");
-//			   Serial.println(LoRaWAN._data);
+			   Serial5.println("Downlink data");
+			   Serial5.print("LoRaWAN._port: ");
+			   Serial5.println(LoRaWAN._port);
+			   Serial5.print("LoRaWAN._data: ");
+			   Serial5.println(LoRaWAN._data);
 
 			   int number = (int)strtol(LoRaWAN._data, NULL, 16);
 
-//			   Serial.println(number);
+			   Serial5.println(number);
 
 			   // r host reset
 			   if(number == 114)
 			   {
+				    Serial5.println("Host reset");
 					digitalWrite(PIN_RESET, HIGH);
 					delay(2000);
 					digitalWrite(PIN_RESET, LOW);
@@ -462,6 +504,7 @@ void loop() {
 			   // auto-reset
 			   if(number == 97)
 			   {
+				   Serial5.println("Auto-reset");
 				   Watchdog.enable(1000);
 				   delay(2000);
 			   }
@@ -479,41 +522,93 @@ void loop() {
 			}
 			else
 			{
-			 //3. Send Confirmed packet error
-//			   Serial.println("Send Confirmed packet ERROR");
+			   Serial5.println("Send Confirmed packet ERROR");
+				if(err_tx++ >= 5)
+				{
+					Serial5.println("Auto-reset");
+					   Watchdog.enable(1000);
+					   delay(2000);
+				}
 			}
-			digitalWrite(LED, HIGH);
-			delay(300);
-			digitalWrite(LED, LOW);
 
-			error = LoRaWAN.sleep(2000000);
-			arduinoLoRaWAN::printAnswer(error);
-
-//			Serial.print("Start sleep: ");
-//			Serial.println(++cont);
-//			//Serial2.flush();
-//			//Serial2.end();
-
-			//rtc.setAlarmSeconds((rtc.getAlarmSeconds() + 30) % 60);
-			rtc.setAlarmMinutes((rtc.getAlarmMinutes() + 3) % 60);
-			rtc.enableAlarm(rtc.MATCH_MMSS);
-			rtc.attachInterrupt(alarmMatch);
-
-			digitalWrite(LED, LOW);
-			// Disable the watchdog entirely by calling Watchdog.disable();
-			Watchdog.disable();
-			rtc.standbyMode();
-//			delay(30000);
-			Watchdog.enable(16000);
-
-//			Serial.println("Exit sleep");
-
-			error = LoRaWAN.wakeUP();
-			arduinoLoRaWAN::printAnswer(error);
-
-			error = LoRaWAN.check();
-			arduinoLoRaWAN::printAnswer(error);
+			break;
 		}
+		case DEVICE_STATE_SLEEP:
+			{
+				//////////////////////////////////////////////
+				// 7. Sleep
+				//////////////////////////////////////////////
+
+				Serial5.println("SLEEP");
+				Serial5.print("sleep_cont: ");
+				Serial5.println(sleep_cont);
+
+				if(sleep_cont == 0)
+				{
+					sleep_cont++;
+
+					Serial5.println("LoRaWAN.sleep");
+					error = LoRaWAN.sleep(2000000);
+					arduinoLoRaWAN::printAnswer(error);
+
+				}else if( ( sleep_cont > 0 ) && ( sleep_cont < ( DUTY_CYCLE_TIME / SLEEP_TIME ) ) )
+				{
+					sleep_cont++;
+
+					char buf[20];
+					sprintf(buf, "%02d:%02d:%02d - %2d/%2d/%4d", rtc.getHours(), rtc.getMinutes(), rtc.getSeconds(), rtc.getDay(), rtc.getMonth(), rtc.getYear());
+					Serial5.println(buf);
+
+					rtc.disableAlarm();
+					rtc.setAlarmSeconds((rtc.getSeconds() + SLEEP_TIME) % 60);
+					rtc.enableAlarm(rtc.MATCH_SS);
+					rtc.attachInterrupt(alarmMatch);
+
+					sprintf(buf, "%02d:%02d:%02d - %2d/%2d/%4d", rtc.getAlarmHours(), rtc.getAlarmMinutes(), rtc.getAlarmSeconds(), rtc.getAlarmDay(), rtc.getAlarmMonth(), rtc.getAlarmYear());
+					Serial5.println(buf);
+
+					Watchdog.disable();
+					Watchdog.enable(16000);
+					Serial5.println("standbyMode");
+					delay(100);
+					Serial5.end();
+
+					rtc.standbyMode();
+
+					Serial5.begin(9600);
+					Serial5.println("exit sleep");
+					sprintf(buf, "%02d:%02d:%02d - %2d/%2d/%4d", rtc.getHours(), rtc.getMinutes(), rtc.getSeconds(), rtc.getDay(), rtc.getMonth(), rtc.getYear());
+					Serial5.println(buf);
+
+					Watchdog.disable();
+					Watchdog.enable(16000);
+
+					_deviceState = DEVICE_STATE_SLEEP;
+
+				}else if( sleep_cont >= ( DUTY_CYCLE_TIME / SLEEP_TIME ) )
+				{
+					Serial5.println("WAKEUP radio");
+					sleep_cont = 0;
+					_deviceState = DEVICE_STATE_SEND;
+
+					error = LoRaWAN.wakeUP();
+					arduinoLoRaWAN::printAnswer(error);
+
+					error = LoRaWAN.check();
+					arduinoLoRaWAN::printAnswer(error);
+
+					error = LoRaWAN.check();
+					arduinoLoRaWAN::printAnswer(error);
+
+					error = LoRaWAN.check();
+					arduinoLoRaWAN::printAnswer(error);
+					if(error > 0)
+						_deviceState = DEVICE_STATE_INIT;
+				}
+
+				break;
+			}
+
 	}
 
 
@@ -581,7 +676,7 @@ void printAddress(DeviceAddress deviceAddress)
   for (uint8_t i = 0; i < 8; i++)
   {
     if (deviceAddress[i] < 16) Serial.print("0");
-    Serial.print(deviceAddress[i], HEX);
+    Serial5.print(deviceAddress[i], HEX);
   }
 }
 
