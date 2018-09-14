@@ -48,21 +48,26 @@ char data[] = "010203";
 uint8_t error = 0;
 uint8_t _deviceState = DEVICE_STATE_INIT;
 
-#define DS_NUM_CATENE 3
-#define A 0
-#define B 1
-#define C 2
+#define DS_NUM_CATENE 2
+//#define A 0
+//#define B 1
+//#define C 2
+#define D 0
+#define E 1
 
 // Setup a oneWire instance to communicate with any OneWire devices (not just Maxim/Dallas temperature ICs)
-OneWire oneWire_A(DS18B20_PIN_11);
-OneWire oneWire_B(DS18B20_PIN_18);
-OneWire oneWire_C(DS18B20_PIN_3);
+//OneWire oneWire_A(DS18B20_PIN_11);
+//OneWire oneWire_B(DS18B20_PIN_18);
+//OneWire oneWire_C(DS18B20_PIN_3);
+OneWire oneWire_D(DS18B20_PIN_11);
+OneWire oneWire_E(DS18B20_PIN_18);
 
 // Pass our oneWire reference to Dallas Temperature.
 //DallasTemperature sensors_A(&oneWire_A);
 //DallasTemperature sensors_B(&oneWire_B);
 //DallasTemperature sensors_C(&oneWire_C);
-DallasTemperature sensors[DS_NUM_CATENE] = { DallasTemperature(&oneWire_A), DallasTemperature(&oneWire_B), DallasTemperature(&oneWire_C) };
+//DallasTemperature sensors[DS_NUM_CATENE] = { DallasTemperature(&oneWire_A), DallasTemperature(&oneWire_B), DallasTemperature(&oneWire_C) };
+DallasTemperature sensors[DS_NUM_CATENE] = { DallasTemperature(&oneWire_D), DallasTemperature(&oneWire_E) };
 
 #define DS_NUM 5
 //#define DS_NUM 11
@@ -101,30 +106,49 @@ ds _ds[3][DS_NUM];
 //		{ 0x28, 0xFF, 0xB0, 0x0F, 0xB0, 0x16, 0x05, 0x58 }
 //};
 
+//uint8_t dsaddr[DS_NUM_CATENE][DS_NUM][8] = {
+//		//Catena A
+//		{
+//			{ 0x28, 0x61, 0x64, 0x11, 0x90, 0x71, 0xB3, 0xD9 },
+//			{ 0x28, 0x61, 0x64, 0x11, 0x8D, 0xB0, 0xD1, 0x2A },
+//			{ 0x28, 0x61, 0x64, 0x11, 0x83, 0xA3, 0x05, 0x51 },
+//			{ 0x28, 0x61, 0x64, 0x11, 0x90, 0x4A, 0xFC, 0xD0 },
+//			{ 0x28, 0x61, 0x64, 0x11, 0x83, 0xC4, 0xFB, 0x0E }
+//		},
+//		//Catena B
+//		{
+//			{ 0x28, 0x61, 0x64, 0x11, 0x90, 0x78, 0xC1, 0x2F },
+//			{ 0x28, 0x61, 0x64, 0x11, 0x83, 0xC7, 0xDF, 0x19 },
+//			{ 0x28, 0x61, 0x64, 0x11, 0x8D, 0x9E, 0x27, 0x9E },
+//			{ 0x28, 0x61, 0x64, 0x11, 0x8D, 0x9F, 0xA1, 0x0B },
+//			{ 0x28, 0x61, 0x64, 0x11, 0x8D, 0xF5, 0x64, 0x43 }
+//		},
+//		//Catena C
+//		{
+//			{ 0x28, 0xFF, 0x26, 0x92, 0xA1, 0x16, 0x03, 0x33 },
+//			{ 0x28, 0xFF, 0x3E, 0x8A, 0xA1, 0x16, 0x03, 0x55 },
+//			{ 0x28, 0xFF, 0x80, 0x58, 0xA7, 0x16, 0x03, 0x6F },
+//			{ 0x28, 0xFF, 0xA6, 0x80, 0xB0, 0x16, 0x04, 0xA5 },
+//			{ 0x28, 0xFF, 0x7A, 0x85, 0xA7, 0x16, 0x03, 0xE8 }
+//		}
+//};
+
 uint8_t dsaddr[DS_NUM_CATENE][DS_NUM][8] = {
-		//Catena A
+		//Catena D
 		{
-			{ 0x28, 0x61, 0x64, 0x11, 0x90, 0x71, 0xB3, 0xD9 },
-			{ 0x628, 0x61, 0x64, 0x11, 0x8D, 0xB0, 0xD1, 0x2A },
-			{ 0x628, 0x61, 0x64, 0x11, 0x83, 0xA3, 0x05, 0x51 },
-			{ 0x628, 0x61, 0x64, 0x11, 0x90, 0x4A, 0xFC, 0xD0 },
-			{ 0x628, 0x61, 0x64, 0x11, 0x83, 0xC4, 0xFB, 0x0E }
+			{ 0x28, 0xFF, 0x04, 0xD3, 0xA6, 0x16, 0x04, 0xDE },
+			{ 0x28, 0xFF, 0xAF, 0xCC, 0xA7, 0x16, 0x03, 0x17 },
+			{ 0x28, 0x55, 0x99, 0xA1, 0x08, 0x00, 0x00, 0x9C },
+			{ 0x28, 0xFF, 0x0E, 0x57, 0xB0, 0x16, 0x04, 0x2F },
+			{ 0x28, 0xFF, 0xBB, 0xDE, 0xA1, 0x16, 0x03, 0x9A }
 		},
-		//Catena B
+		//Catena E (ex 5)
 		{
-			{ 0x28, 0x61, 0x64, 0x11, 0x90, 0x78, 0xC1, 0x2F },
-			{ 0x28, 0x61, 0x64, 0x11, 0x83, 0xC7, 0xDF, 0x19 },
-			{ 0x28, 0x61, 0x64, 0x11, 0x8D, 0x9E, 0x27, 0x9E },
-			{ 0x28, 0x61, 0x64, 0x11, 0x8D, 0x9F, 0xA1, 0x0B },
-			{ 0x28, 0x61, 0x64, 0x11, 0x8D, 0xF5, 0x64, 0x43 }
-		},
-		//Catena C
-		{
-			{ 0x28, 0xFF, 0x26, 0x92, 0xA1, 0x16, 0x03, 0x33 },
-			{ 0x28, 0xFF, 0x3E, 0x8A, 0xA1, 0x16, 0x03, 0x55 },
-			{ 0x28, 0xFF, 0x80, 0x58, 0xA7, 0x16, 0x03, 0x6F },
-			{ 0x28, 0xFF, 0xA6, 0x80, 0xB0, 0x16, 0x04, 0xA5 },
-			{ 0x28, 0xFF, 0x7A, 0x85, 0xA7, 0x16, 0x03, 0xE8 }
+			{ 0x28, 0xFF, 0x03, 0x74, 0xA7, 0x16, 0x05, 0x55 },
+			{ 0x28, 0xFF, 0x37, 0x91, 0xB0, 0x16, 0x04, 0x68 },
+			{ 0x28, 0xFF, 0xBD, 0x0C, 0xB0, 0x16, 0x05, 0x3C },
+			{ 0x28, 0xFF, 0xCC, 0x48, 0xA7, 0x16, 0x05, 0x42 },
+			{ 0x28, 0xFF, 0x8E, 0x2B, 0xB0, 0x16, 0x05, 0x00 }
 		}
 };
 
@@ -206,27 +230,32 @@ void setup() {
 	digitalWrite(LED, LOW);
 	Serial5.println("START");
 
-//	sensors[A] = sensors_A;
-//	sensors[B] = sensors_B;
-//	sensors[C] = sensors_C;
-
-	sensors[A].begin();
-	sensors[B].begin();
-	sensors[C].begin();
-	Serial5.print("Found A ");
-	Serial5.print(sensors[A].getDeviceCount(), DEC);
+//	sensors[A].begin();
+//	sensors[B].begin();
+//	sensors[C].begin();
+	sensors[D].begin();
+	sensors[E].begin();
+//	Serial5.print("Found A ");
+//	Serial5.print(sensors[A].getDeviceCount(), DEC);
+//	Serial5.println(" devices.");
+//	Serial5.print("Found B ");
+//	Serial5.print(sensors[B].getDeviceCount(), DEC);
+//	Serial5.println(" devices.");
+//	Serial5.print("Found C ");
+//	Serial5.print(sensors[C].getDeviceCount(), DEC);
+//	Serial5.println(" devices.");
+	Serial5.print("Found D ");
+	Serial5.print(sensors[D].getDeviceCount(), DEC);
 	Serial5.println(" devices.");
-	Serial5.print("Found B ");
-	Serial5.print(sensors[B].getDeviceCount(), DEC);
-	Serial5.println(" devices.");
-	Serial5.print("Found C ");
-	Serial5.print(sensors[C].getDeviceCount(), DEC);
+	Serial5.print("Found E ");
+	Serial5.print(sensors[E].getDeviceCount(), DEC);
 	Serial5.println(" devices.");
 
 	for(int k=0; k< DS_NUM_CATENE; k++)
 	{
 		Serial5.print("--> ");
-		Serial5.println((char)('A' + k));
+//		Serial5.println((char)('A' + k));
+		Serial5.println((char)('D' + k));
 
 		for(int i=0; i< DS_NUM; i++)
 		{
@@ -370,9 +399,11 @@ void loop() {
 
 		case DEVICE_STATE_SEND:
 		{
-			sensors[A].requestTemperatures(); // Send the command to get temperatures
-			sensors[B].requestTemperatures();
-			sensors[C].requestTemperatures();
+//			sensors[A].requestTemperatures(); // Send the command to get temperatures
+//			sensors[B].requestTemperatures();
+//			sensors[C].requestTemperatures();
+			sensors[D].requestTemperatures(); // Send the command to get temperatures
+			sensors[E].requestTemperatures();
 			delay(500);
 
 			uint8_t datab[4];
@@ -425,7 +456,8 @@ void loop() {
 						Serial5.print("Addr: ");
 						printAddress(_ds[k][i].addr);
 						Serial5.print(" Temp");
-						Serial5.print((char)('A' + k));
+//						Serial5.print((char)('A' + k));
+						Serial5.print((char)('D' + k));
 						Serial5.print(" ");
 						Serial5.print(i+1);
 						Serial5.print(": ");
@@ -454,7 +486,7 @@ void loop() {
 			do
 			{
 				Watchdog.reset();
-				if(tx_cont<0)
+				if(tx_cont>0)
 					delay(5000);
 				Serial5.print("Send unconfirmed packet: ");
 				Serial5.println(tx_cont);
@@ -516,10 +548,10 @@ void loop() {
 			{
 			   _deviceState = DEVICE_STATE_JOIN;
 			}
-			else if( error == 2 )
-			{
-			   _deviceState = DEVICE_STATE_INIT;
-			}
+//			else if( error == 2 )
+//			{
+//			   _deviceState = DEVICE_STATE_INIT;
+//			}
 			else
 			{
 			   Serial5.println("Send Confirmed packet ERROR");
